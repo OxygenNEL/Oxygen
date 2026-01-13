@@ -1,0 +1,68 @@
+/*
+<OxygenNEL>
+Copyright (C) <2025>  <OxygenNEL>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+using System.Collections.Generic;
+using System.ComponentModel;
+
+namespace OxygenNEL.Entities.Web.NetGame;
+
+public class ServerItem : INotifyPropertyChanged
+{
+    private string _entityId = string.Empty;
+    private string _name = string.Empty;
+    private string _imageUrl = string.Empty;
+
+    public string EntityId { get => _entityId; set { _entityId = value; OnPropertyChanged(nameof(EntityId)); } }
+    public string Name { get => _name; set { _name = value; OnPropertyChanged(nameof(Name)); } }
+    public string ImageUrl { get => _imageUrl; set { _imageUrl = value; OnPropertyChanged(nameof(ImageUrl)); } }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+}
+
+public class ListServersResult
+{
+    public bool NotLogin { get; set; }
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public List<ServerItem> Items { get; set; } = new();
+    public bool HasMore { get; set; }
+}
+
+public class ServerDetailResult
+{
+    public bool NotLogin { get; set; }
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public List<string> Images { get; set; } = new();
+}
+
+public class RoleItem
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+}
+
+public class ServerRolesResult
+{
+    public bool NotLogin { get; set; }
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public string ServerId { get; set; } = string.Empty;
+    public List<RoleItem> Items { get; set; } = new();
+}
+
+public class JoinGameResult
+{
+    public bool Success { get; set; }
+    public bool NotLogin { get; set; }
+    public string? Message { get; set; }
+    public string Ip { get; set; } = string.Empty;
+    public int Port { get; set; }
+}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>OxygenNEL.Core</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="SharpCompress" Version="0.38.0" />
+        <PackageReference Include="System.Management" Version="9.0.0" />
+        <PackageReference Include="DotNetty.Buffers" Version="0.7.6"/>
+        <PackageReference Include="DotNetty.Codecs" Version="0.7.6"/>
+        <PackageReference Include="DotNetty.Common" Version="0.7.6"/>
+        <PackageReference Include="DotNetty.Handlers" Version="0.7.6"/>
+        <PackageReference Include="DotNetty.Transport" Version="0.7.6"/>
+    </ItemGroup>
+
+</Project>

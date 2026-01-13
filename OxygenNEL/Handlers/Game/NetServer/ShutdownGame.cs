@@ -1,0 +1,37 @@
+/*
+<OxygenNEL>
+Copyright (C) <2025>  <OxygenNEL>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+using System;
+using System.Collections.Generic;
+using OxygenNEL.Manager;
+
+namespace OxygenNEL.Handlers.Game.NetServer;
+
+public class ShutdownGame
+{
+    public object[] Execute(IEnumerable<string> identifiers)
+    {
+        var closed = new List<string>();
+        foreach (var s in identifiers)
+        {
+            if (string.IsNullOrWhiteSpace(s)) continue;
+            if (Guid.TryParse(s, out var id))
+            {
+                GameManager.Instance.ShutdownInterceptor(id);
+                closed.Add(s);
+            }
+        }
+        var payloads = new object[]
+        {
+            new { type = "shutdown_ack", identifiers = closed.ToArray() },
+            new { type = "channels_updated" }
+        };
+        return payloads;
+    }
+}

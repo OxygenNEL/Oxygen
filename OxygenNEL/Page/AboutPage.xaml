@@ -1,0 +1,104 @@
+<Page
+    x:Class="OxygenNEL.Page.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OxygenNEL"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:page="using:OxygenNEL.Page"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel Padding="24" Spacing="24" MaxWidth="1000" HorizontalAlignment="Left">
+            
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <TextBlock x:Name="LogoText" Text="O₂" FontSize="96" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <StackPanel VerticalAlignment="Center" Spacing="4">
+                    <TextBlock Text="Oxygen NEL" Style="{StaticResource TitleTextBlockStyle}" FontSize="32"/>
+                    <TextBlock Text="{x:Bind AppVersion}" Style="{StaticResource SubtitleTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                         <FontIcon Glyph="&#xE946;" />
+                         <TextBlock Text="版权信息" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    </StackPanel>
+                    <TextBlock Text="Copyright © 2025 OxygenNEL. All Rights Reserved." Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="OxygenNEL is an open source project." Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="12">
+                     <StackPanel Orientation="Horizontal" Spacing="12">
+                         <FontIcon Glyph="&#xE715;" />
+                         <TextBlock Text="联系我们" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="24">
+                         <HyperlinkButton Click="Github_Click">
+                             <StackPanel Orientation="Horizontal" Spacing="8">
+                                 <FontIcon Glyph="&#xE71B;" FontSize="16"/>
+                                 <TextBlock Text="GitHub Repository"/>
+                             </StackPanel>
+                         </HyperlinkButton>
+
+                         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                             <FontIcon Glyph="&#xE779;" FontSize="16"/>
+                             <HyperlinkButton Click="QQGroup_Click">
+                                 <TextBlock Text="加入QQ群"/>
+                             </HyperlinkButton>
+                             <TextBlock Text="{x:Bind QQGroup}" VerticalAlignment="Center" IsTextSelectionEnabled="True" FontWeight="SemiBold"/>
+                         </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="12">  
+                         <FontIcon Glyph="&#xE77B;" />
+                         <TextBlock Text="贡献者" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    </StackPanel>
+                    
+                    <GridView ItemsSource="{x:Bind Contributors}" SelectionMode="None">
+                        <GridView.ItemTemplate>
+                            <DataTemplate x:DataType="page:Contributor">
+                                <Grid Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="4" Padding="0" Width="200">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle Fill="{x:Bind ColorBrush}" Grid.Column="0"/>
+                                    <StackPanel Grid.Column="1" Padding="12,8">
+                                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                        <TextBlock Text="{x:Bind Role}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </StackPanel>
+            </Grid>
+
+            <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE8A5;"/>
+                        <TextBlock Text="开源许可" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    </StackPanel>
+                    <TextBlock Text="本项目遵循 GPLv3 开源协议" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <HyperlinkButton Click="License_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE71B;" FontSize="16"/>
+                            <TextBlock Text="查看协议全文"/>
+                        </StackPanel>
+                    </HyperlinkButton>
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

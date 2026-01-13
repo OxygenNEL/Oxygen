@@ -1,0 +1,98 @@
+/*
+<OxygenNEL>
+Copyright (C) <2025>  <OxygenNEL>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+using DotNetty.Buffers;
+using Codexus.Development.SDK.Connection;
+using Codexus.Development.SDK.Enums;
+using Codexus.Development.SDK.Extensions;
+using Codexus.Development.SDK.Packet;
+using Serilog;
+
+namespace OxygenNEL.IRC.Packet;
+
+[RegisterPacket(EnumConnectionState.Play, EnumPacketDirection.ServerBound, 2, EnumProtocolVersion.V1200, false)]
+public class CChatCommandIrcV1200 : IPacket
+{
+    public EnumProtocolVersion ClientProtocolVersion { get; set; }
+
+    private byte[]? _rawBytes;
+    private string _command = string.Empty;
+    private bool _isIrcCommand;
+
+    public void ReadFromBuffer(IByteBuffer buffer)
+    {
+        _rawBytes = new byte[buffer.ReadableBytes];
+        buffer.GetBytes(buffer.ReaderIndex, _rawBytes);
+
+        _command = buffer.ReadStringFromBuffer(32767);
+        buffer.SkipBytes(buffer.ReadableBytes);
+
+        _isIrcCommand = _command.StartsWith("irc ", StringComparison.OrdinalIgnoreCase)
+                     || _command.Equals("irc", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void WriteToBuffer(IByteBuffer buffer)
+    {
+        if (_isIrcCommand) return;
+
+        if (_rawBytes != null)
+            buffer.WriteBytes(_rawBytes);
+    }
+
+    public bool HandlePacket(GameConnection connection)
+    {
+        if (!_isIrcCommand) return false;
+        if (!IrcManager.Enabled) return false;
+
+        var content = _command.Length > 4 ? _command.Substring(4).Trim() : string.Empty;
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            SendLocalMessage(connection, "§e[IRC] 用法: /irc <消息>");
+            return true;
+        }
+
+        var playerName = connection.NickName;
+        if (string.IsNullOrEmpty(playerName))
+        {
+            SendLocalMessage(connection, "§c[IRC] 未登录");
+            return true;
+        }
+
+        var ircClient = IrcManager.Get(connection);
+        if (ircClient == null)
+        {
+            SendLocalMessage(connection, "§c[IRC] IRC 未连接");
+            return true;
+        }
+        ircClient.SendChat(playerName, content);
+        return true;
+    }
+
+    public static void SendLocalMessage(GameConnection connection, string message)
+    {
+        try
+        {
+            if (connection.State != EnumConnectionState.Play) return;
+            if (connection.ProtocolVersion != EnumProtocolVersion.V1200) return;
+            var buffer = Unpooled.Buffer();
+            buffer.WriteVarInt(0x64); 
+            var jsonMessage = "{\"text\":\"" + message.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"}";
+            var messageBytes = System.Text.Encoding.UTF8.GetBytes(jsonMessage);
+            buffer.WriteVarInt(messageBytes.Length);
+            buffer.WriteBytes(messageBytes);
+            buffer.WriteBoolean(false);
+            connection.ClientChannel?.WriteAndFlushAsync(buffer);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[IRC] 发送本地消息失败");
+        }
+    }
+}

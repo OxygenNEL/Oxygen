@@ -1,0 +1,95 @@
+<Page
+    x:Class="OxygenNEL.Page.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,24" HorizontalAlignment="Center">
+            <TextBlock Text="Oxygen NEL" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+            <NavigationView x:Name="ModeNav"
+                            PaneDisplayMode="Top"
+                            IsBackButtonVisible="Collapsed"
+                            IsSettingsVisible="False"
+                            IsPaneToggleButtonVisible="False"
+                            SelectionChanged="ModeNav_SelectionChanged">
+                <NavigationView.MenuItems>
+                    <NavigationViewItem Content="登录" Tag="login" IsSelected="True"/>
+                    <NavigationViewItem Content="注册" Tag="register"/>
+                </NavigationView.MenuItems>
+                <NavigationView.Resources>
+                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                </NavigationView.Resources>
+            </NavigationView>
+        </StackPanel>
+
+        <StackPanel x:Name="LoginPanel" Grid.Row="1" Spacing="16" Opacity="1">
+            <StackPanel.Transitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromHorizontalOffset="-50" FromVerticalOffset="0"/>
+                </TransitionCollection>
+            </StackPanel.Transitions>
+            <TextBox x:Name="LoginUserInput" Header="用户名/邮箱" PlaceholderText="请输入用户名/邮箱"/>
+            <PasswordBox x:Name="LoginPasswordInput" Header="密码" PlaceholderText="请输入密码"/>
+            <Button x:Name="LoginButton" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="LoginButton_Click">
+                <Grid>
+                    <TextBlock x:Name="LoginButtonText" Text="登录"/>
+                    <ProgressRing x:Name="LoginProgress" IsActive="False" Visibility="Collapsed" Width="16" Height="16"/>
+                </Grid>
+            </Button>
+            <TextBlock Text="没有账号？请切换到注册" HorizontalAlignment="Center" Opacity="0.5" FontSize="12"/>
+        </StackPanel>
+
+        <StackPanel x:Name="RegisterPanel" Grid.Row="1" Spacing="16" Visibility="Collapsed" Opacity="0">
+            <StackPanel.Transitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromHorizontalOffset="50" FromVerticalOffset="0"/>
+                </TransitionCollection>
+            </StackPanel.Transitions>
+
+            <StackPanel x:Name="RegisterStep1" Spacing="16">
+                <TextBox x:Name="RegEmailInput" Header="QQ号" PlaceholderText="只需输入QQ号，无需@qq.com"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="RegCodeInput" Header="验证码" PlaceholderText="6位数字验证码"/>
+                    <Button Grid.Column="1" x:Name="SendCodeButton" VerticalAlignment="Bottom" Margin="8,0,0,0" Click="SendCodeButton_Click">
+                        <Grid>
+                            <TextBlock x:Name="SendCodeButtonText" Text="发送"/>
+                            <ProgressRing x:Name="SendCodeProgress" IsActive="False" Visibility="Collapsed" Width="16" Height="16"/>
+                        </Grid>
+                    </Button>
+                </Grid>
+                <Button x:Name="NextStepButton" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="NextStepButton_Click">
+                    <Grid>
+                        <TextBlock x:Name="NextStepButtonText" Text="下一步"/>
+                        <ProgressRing x:Name="NextStepProgress" IsActive="False" Visibility="Collapsed" Width="16" Height="16"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <StackPanel x:Name="RegisterStep2" Spacing="16" Visibility="Collapsed">
+                <TextBox x:Name="RegUsernameInput" Header="用户名" PlaceholderText="3-64个字符"/>
+                <PasswordBox x:Name="RegPasswordInput" Header="密码" PlaceholderText="至少8位"/>
+                <PasswordBox x:Name="RegPassword2Input" Header="确认密码" PlaceholderText="再次输入密码"/>
+                <Button x:Name="RegisterButton" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="RegisterButton_Click">
+                    <Grid>
+                        <TextBlock x:Name="RegisterButtonText" Text="完成注册"/>
+                        <ProgressRing x:Name="RegisterProgress" IsActive="False" Visibility="Collapsed" Width="16" Height="16"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <TextBlock Text="已有账号？请切换到登录" HorizontalAlignment="Center" Opacity="0.5" FontSize="12"/>
+        </StackPanel>
+    </Grid>
+</Page>

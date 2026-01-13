@@ -1,0 +1,22 @@
+/*
+<OxygenNEL>
+Copyright (C) <2025>  <OxygenNEL>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+using System.Text.Json.Serialization;
+using Codexus.Cipher.Entities.WPFLauncher.NetGame;
+
+namespace OxygenNEL.Entities.Web.NetGame;
+
+public class EntityNetGamesResponse
+{
+	[JsonPropertyName("entities")]
+	public required EntityNetGameItem[] Entities { get; set; }
+
+	[JsonPropertyName("total")]
+	public required int Total { get; set; }
+}

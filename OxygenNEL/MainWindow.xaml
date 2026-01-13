@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="OxygenNEL.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OxygenNEL"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:component="using:OxygenNEL.Component"
+    mc:Ignorable="d">
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition MaxHeight="32"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" x:Name="AppTitleBar" VerticalAlignment="Top" Background="Transparent" Margin="0,-1,0,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,6,0,6">
+                <TextBlock x:Name="AppTitleIcon" Text="O₂" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <TextBlock x:Name="AppTitleTextBlock" Text="Oxygen NEL" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <NavigationView Grid.Row="1" x:Name="NavView"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        IsPaneToggleButtonVisible="False"
+                        IsSettingsVisible="True"
+                        SelectionChanged="NavView_SelectionChanged"
+                        Loaded="NavView_Loaded"
+                        SizeChanged="NavView_SizeChanged">
+            <NavigationView.PaneHeader>
+                <component:UserProfileCard x:Name="UserProfile"/>
+            </NavigationView.PaneHeader>
+            <Frame x:Name="ContentFrame"/>
+        </NavigationView>
+
+        <Grid Grid.Row="1" IsHitTestVisible="False">
+            <component:NotificationHost HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,16,0,0"/>
+        </Grid>
+
+        <Grid Grid.Row="1" x:Name="AuthOverlay" Visibility="Collapsed">
+            <Frame x:Name="OverlayFrame"/>
+        </Grid>
+    </Grid>
+</Window>
