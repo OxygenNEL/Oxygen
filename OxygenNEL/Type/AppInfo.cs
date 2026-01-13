@@ -10,9 +10,9 @@ the Free Software Foundation, either version 3 of the License, or
 namespace OxygenNEL.type;
 class AppInfo
 {
-    public const string AppVersion = "1.1";
+    public const string AppVersion = "0.471";
 
-    public const string GithubUrL = "https://github.com/FandMC/OxygenNEL";
+    public const string GithubUrL = "https://github.com/OxygenNEL/Oxygen";
     
     public const string QQGroup = "824115841";
     

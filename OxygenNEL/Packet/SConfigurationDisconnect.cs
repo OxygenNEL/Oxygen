@@ -6,6 +6,7 @@ using Codexus.Development.SDK.Enums;
 using Codexus.Development.SDK.Packet;
 using DotNetty.Buffers;
 using OxygenNEL.Component;
+using OxygenNEL.IRC;
 using OxygenNEL.Manager;
 using OxygenNEL.type;
 using OxygenNEL.Core.Utils;
@@ -36,6 +37,7 @@ public class SConfigurationDisconnect : IPacket
 
 	public bool HandlePacket(GameConnection connection)
 	{
+		IrcManager.Remove(connection);
 		var displayText = Reason.DisplayText;
 		Log.Information("[Disconnect] GameId={GameId}, Reason={Reason}", connection.GameId, displayText);
 
