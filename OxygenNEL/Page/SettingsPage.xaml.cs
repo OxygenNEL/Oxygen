@@ -10,6 +10,7 @@ the Free Software Foundation, either version 3 of the License, or
 using System;
 using System.IO;
 using System.Numerics;
+using System.Threading.Tasks;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -26,6 +27,7 @@ namespace OxygenNEL.Page
         public static string PageTitle => "设置";
         private readonly SettingData _s;
         private bool _init = true;
+        private bool _isPickerOpen;
         private int _currentIndex;
         private readonly string[] _tags = { "appearance", "function", "proxy" };
 
@@ -99,26 +101,47 @@ namespace OxygenNEL.Page
 
         private async void SelectBackgroundBtn_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new FileOpenPicker();
-            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            picker.FileTypeFilter.Add(".jpg");
-            picker.FileTypeFilter.Add(".jpeg");
-            picker.FileTypeFilter.Add(".png");
-            picker.FileTypeFilter.Add(".gif");
-            picker.FileTypeFilter.Add(".bmp");
-            picker.FileTypeFilter.Add(".mp4");
-            picker.FileTypeFilter.Add(".webm");
-            picker.FileTypeFilter.Add(".wmv");
+            if (_isPickerOpen) return;
+            _isPickerOpen = true;
+            
+            string? filePath = null;
+            try
+            {
+                var picker = new FileOpenPicker();
+                picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                picker.FileTypeFilter.Add(".jpg");
+                picker.FileTypeFilter.Add(".jpeg");
+                picker.FileTypeFilter.Add(".png");
+                picker.FileTypeFilter.Add(".gif");
+                picker.FileTypeFilter.Add(".bmp");
+                picker.FileTypeFilter.Add(".mp4");
+                picker.FileTypeFilter.Add(".webm");
+                picker.FileTypeFilter.Add(".wmv");
 
-            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
-            InitializeWithWindow.Initialize(picker, hwnd);
+                var window = App.MainWindow;
+                if (window == null) return;
+                var hwnd = WindowNative.GetWindowHandle(window);
+                InitializeWithWindow.Initialize(picker, hwnd);
 
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
+                await Task.Delay(50);
+                var file = await picker.PickSingleFileAsync();
+                filePath = file?.Path;
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Debug(ex, "文件选择器异常");
+                filePath = await ShowManualPathInputDialog("选择背景文件", "请输入图片或视频文件的完整路径：");
+            }
+            finally
+            {
+                _isPickerOpen = false;
+            }
+
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 try
                 {
-                    var destPath = SettingManager.CopyBackgroundToData(file.Path);
+                    var destPath = SettingManager.CopyBackgroundToData(filePath);
                     _s.CustomBackgroundPath = destPath;
                     UpdateCustomBackgroundPanel();
                     MainWindow.ApplyThemeFromSettingsStatic();
@@ -163,24 +186,45 @@ namespace OxygenNEL.Page
 
         private async void SelectMusicBtn_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new FileOpenPicker();
-            picker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
-            picker.FileTypeFilter.Add(".mp3");
-            picker.FileTypeFilter.Add(".wav");
-            picker.FileTypeFilter.Add(".flac");
-            picker.FileTypeFilter.Add(".m4a");
-            picker.FileTypeFilter.Add(".wma");
-            picker.FileTypeFilter.Add(".ogg");
+            if (_isPickerOpen) return;
+            _isPickerOpen = true;
+            
+            string? filePath = null;
+            try
+            {
+                var picker = new FileOpenPicker();
+                picker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+                picker.FileTypeFilter.Add(".mp3");
+                picker.FileTypeFilter.Add(".wav");
+                picker.FileTypeFilter.Add(".flac");
+                picker.FileTypeFilter.Add(".m4a");
+                picker.FileTypeFilter.Add(".wma");
+                picker.FileTypeFilter.Add(".ogg");
 
-            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
-            InitializeWithWindow.Initialize(picker, hwnd);
+                var window = App.MainWindow;
+                if (window == null) return;
+                var hwnd = WindowNative.GetWindowHandle(window);
+                InitializeWithWindow.Initialize(picker, hwnd);
 
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
+                await Task.Delay(50);
+                var file = await picker.PickSingleFileAsync();
+                filePath = file?.Path;
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Debug(ex, "文件选择器异常");
+                filePath = await ShowManualPathInputDialog("选择音乐文件", "请输入音乐文件的完整路径：");
+            }
+            finally
+            {
+                _isPickerOpen = false;
+            }
+
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 try
                 {
-                    var destPath = SettingManager.CopyMusicToData(file.Path);
+                    var destPath = SettingManager.CopyMusicToData(filePath);
                     _s.MusicPath = destPath;
                     UpdateMusicPlayerPanel();
                     MainWindow.ApplyMusicPlayerSettingsStatic();
@@ -271,6 +315,25 @@ namespace OxygenNEL.Page
 
             visual.StartAnimation("Offset", offsetAnim);
             visual.StartAnimation("Opacity", opacityAnim);
+        }
+
+        private async Task<string?> ShowManualPathInputDialog(string title, string prompt)
+        {
+            var inputBox = new TextBox { PlaceholderText = @"C:\path\to\file.ext", Width = 400 };
+            var dialog = new ContentDialog
+            {
+                Title = title,
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children = { new TextBlock { Text = prompt, TextWrapping = TextWrapping.Wrap }, inputBox }
+                },
+                PrimaryButtonText = "确定",
+                CloseButtonText = "取消",
+                XamlRoot = this.XamlRoot
+            };
+            var result = await dialog.ShowAsync();
+            return result == ContentDialogResult.Primary ? inputBox.Text?.Trim() : null;
         }
     }
 }

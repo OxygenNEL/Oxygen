@@ -808,14 +808,22 @@ del ""%~f0""
 
         void CleanupMusicPlayer()
         {
-            if (_musicPlayer != null)
-            {
-                _musicPlayer.Pause();
-                _musicPlayer.Dispose();
-                _musicPlayer = null;
-            }
+            var player = _musicPlayer;
+            _musicPlayer = null;
             _isMusicPlaying = false;
+            
+            if (player != null)
+            {
+                try { player.Pause(); } catch { }
+                try { player.MediaOpened -= MusicPlayer_MediaOpened; } catch { }
+                try { player.PlaybackSession.PositionChanged -= MusicPlayer_PositionChanged; } catch { }
+                try { player.Source = null; } catch { }
+                try { player.Dispose(); } catch { }
+            }
+            
             UpdateMusicPlayPauseIcon();
+            MusicProgressSlider.Value = 0;
+            MusicTimeText.Text = "0:00";
         }
 
         void MusicPlayPauseBtn_Click(object sender, RoutedEventArgs e)
@@ -844,11 +852,16 @@ del ""%~f0""
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                var duration = sender.PlaybackSession.NaturalDuration;
-                if (duration.TotalSeconds > 0)
+                if (_musicPlayer == null) return;
+                try
                 {
-                    MusicProgressSlider.Maximum = duration.TotalSeconds;
+                    var duration = sender.PlaybackSession.NaturalDuration;
+                    if (duration.TotalSeconds > 0)
+                    {
+                        MusicProgressSlider.Maximum = duration.TotalSeconds;
+                    }
                 }
+                catch { }
             });
         }
 
@@ -856,11 +869,16 @@ del ""%~f0""
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                _isUpdatingMusicSlider = true;
-                MusicProgressSlider.Value = sender.Position.TotalSeconds;
-                var pos = sender.Position;
-                MusicTimeText.Text = $"{(int)pos.TotalMinutes}:{pos.Seconds:D2}";
-                _isUpdatingMusicSlider = false;
+                if (_musicPlayer == null) return;
+                try
+                {
+                    _isUpdatingMusicSlider = true;
+                    MusicProgressSlider.Value = sender.Position.TotalSeconds;
+                    var pos = sender.Position;
+                    MusicTimeText.Text = $"{(int)pos.TotalMinutes}:{pos.Seconds:D2}";
+                }
+                catch { }
+                finally { _isUpdatingMusicSlider = false; }
             });
         }
 
