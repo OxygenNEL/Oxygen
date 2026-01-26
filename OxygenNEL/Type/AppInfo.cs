@@ -10,5 +10,5 @@ the Free Software Foundation, either version 3 of the License, or
 namespace OxygenNEL.type;
 class AppInfo
 {
-    public const string AppVersion = "2.4";
+    public const string AppVersion = "2.4 - Offline";
 }

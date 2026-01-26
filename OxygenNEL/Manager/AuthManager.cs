@@ -12,6 +12,10 @@ namespace OxygenNEL.Manager;
 public sealed class AuthManager
 {
     public static AuthManager Instance { get; } = new AuthManager();
+    
+    public const bool SkipLogin = true;
+
+    public const string FallbackSalt = "EFD76BB364D9C8BD90767B6F51F574F3";
 
     static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
@@ -26,12 +30,13 @@ public sealed class AuthManager
     public string? Rank { get; private set; }
     public bool IsBanned { get; private set; }
     public bool IsAdmin { get; private set; }
-    public string CachedSalt { get; private set; } = string.Empty;
+    public string CachedSalt { get; private set; } = FallbackSalt;
     public string CachedGameVersion { get; private set; } = string.Empty;
-    public bool IsLoggedIn => !string.IsNullOrWhiteSpace(Token);
+    public bool IsLoggedIn => SkipLogin || !string.IsNullOrWhiteSpace(Token);
 
     public async Task<string> GetCrcSaltAsyncIfNeeded(CancellationToken ct = default)
     {
+        if (SkipLogin) return FallbackSalt;
         if (string.IsNullOrEmpty(CachedSalt))
         {
             await GetCrcSaltAsync(ct);
